@@ -40,9 +40,9 @@ jobs:
           
             new_patch=$((patch + 1))
           
-            new_tag="v${major}.${minor}.${new_patch}-dev"
+            new_tag="v${major}.${minor}.${new_patch}"
           else
-            new_tag="v0.0.1-dev"
+            new_tag="v0.0.1"
           fi
           
           echo "New tag: $new_tag"
@@ -68,10 +68,6 @@ jobs:
         run: |
           docker save -o ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.tar ${{ env.DOCKER_IMAGE_NAME }}:${{ env.NEW_TAG }}
 
-      - name: Zip Docker image
-        run: |
-          zip ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.zip ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.tar
-
       - name: Create README file with instructions
         run: |
           echo "To run the application with Docker, follow these steps:" > ToDo.txt
@@ -82,6 +78,10 @@ jobs:
           echo "   docker run -d -p 3000:3000 ${{ env.DOCKER_IMAGE_NAME }}:${{ env.NEW_TAG }}" >> ToDo.txt
           echo "4. Visit http://localhost:3000 to view the application." >> ToDo.txt
 
+      - name: Zip Docker image and ToDo.txt
+        run: |
+          zip ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.zip ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.tar ToDo.txt
+
       - name: Create GitHub Release and upload artifacts
         uses: softprops/action-gh-release@v1
         with:
@@ -89,7 +89,6 @@ jobs:
           release_name: "Release ${{ env.NEW_TAG }}"
           files: |
             ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.zip
-            ToDo.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
