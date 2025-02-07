@@ -28,30 +28,42 @@ jobs:
         run: |
           TAG="${GITHUB_REF##*/}"
           echo "Tag is: $TAG"
-          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "TAG=$TAG" >> $GITHUB_ENV  # Ustawienie zmiennej środowiskowej TAG
 
       - name: Build Docker image using Docker Compose
         run: |
-          # Dynamically set the tag for the image
+          # Budowanie obrazu z użyciem docker-compose
           docker-compose -f docker-compose.yml build --no-cache
 
-      - name: Tag Docker image with Git tag
+      - name: Tag Docker image as latest
         run: |
-          docker tag gesture_controlled_presentation_tool_frontend:latest gesture_controlled_presentation_tool_frontend:${{ env.TAG }}
+          docker tag gesture_controlled_presentation_tool_frontend:latest gesture_controlled_presentation_tool_frontend:latest
 
       - name: Save Docker image as tar
         run: |
-          docker save -o gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.tar gesture_controlled_presentation_tool_frontend:${{ env.TAG }}
+          docker save -o gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.tar gesture_controlled_presentation_tool_frontend:latest
 
       - name: Zip Docker image
         run: |
           zip gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.zip gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.tar
 
-      - name: Create GitHub Release and upload zip
+      - name: Create README file with instructions
+        run: |
+          echo "To run the application with Docker, follow these steps:" > ToDo.txt
+          echo "1. Download and unzip the release file." >> ToDo.txt
+          echo "2. Run the following command to load the Docker image:" >> ToDo.txt
+          echo "   docker load -i gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.tar" >> ToDo.txt
+          echo "3. Start the application by running this command:" >> ToDo.txt
+          echo "   docker run -d -p 3000:3000 gesture_controlled_presentation_tool_frontend:latest" >> ToDo.txt
+          echo "4. Visit http://localhost:3000 to view the application." >> ToDo.txt
+
+      - name: Create GitHub Release and upload zip and ToDo.txt
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.TAG }}
-          files: gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.zip
+          files: |
+            gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.zip
+            ToDo.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -59,3 +71,4 @@ jobs:
         run: |
           rm gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.tar
           rm gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.zip
+          rm ToDo.txt
