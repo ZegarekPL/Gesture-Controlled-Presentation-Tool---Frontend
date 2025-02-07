@@ -61,6 +61,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.TAG }}
+          release_name: "Release ${{ env.TAG }}"
           files: |
             gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.zip
             ToDo.txt
