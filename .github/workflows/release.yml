@@ -18,8 +18,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
 
       - name: Create tag for release
         id: create_tag
@@ -27,17 +29,17 @@ jobs:
           TAG="v0.0.1"  # Możesz zmieniać tag na odpowiednią wersję
           echo "Created tag: $TAG"
           git tag $TAG
-          git push origin $TAG  # Teraz używamy push'a z odpowiednimi uprawnieniami
+          git push origin $TAG
 
-      - name: Build Docker image
+      - name: Build Docker image using Docker Compose
         run: |
-          docker build -t gesture_controlled_presentation_tool_frontend:${{ steps.create_tag.outputs.TAG }} .
+          docker-compose -f docker-compose.yml build 
 
-      - name: Save Docker image as tar file
+      - name: Save Docker image as tar
         run: |
           docker save -o gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.tar gesture_controlled_presentation_tool_frontend:${{ steps.create_tag.outputs.TAG }}
 
-      - name: Zip Docker image tar file
+      - name: Zip Docker image
         run: |
           zip gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.zip gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.tar
 
