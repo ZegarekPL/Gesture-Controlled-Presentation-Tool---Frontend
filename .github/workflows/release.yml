@@ -28,7 +28,7 @@ jobs:
         run: |
           TAG="${GITHUB_REF##*/}"
           echo "Tag is: $TAG"
-          echo "TAG=$TAG" >> $GITHUB_ENV  # Ustawienie zmiennej środowiskowej TAG
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       - name: Build Docker image using Docker Compose
         run: |
