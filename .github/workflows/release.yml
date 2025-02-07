@@ -1,0 +1,52 @@
+name: Docker Release Workflow
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Create tag for release
+        id: create_tag
+        run: |
+          TAG="v0.0.1"  # Możesz zmieniać tag na odpowiednią wersję
+          echo "Created tag: $TAG"
+          git tag $TAG
+          git push origin $TAG
+
+      - name: Build Docker image
+        run: |
+          docker build -t gesture_controlled_presentation_tool_frontend:${{ steps.create_tag.outputs.TAG }} .
+
+      - name: Save Docker image as tar
+        run: |
+          docker save -o gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.tar gesture_controlled_presentation_tool_frontend:${{ steps.create_tag.outputs.TAG }}
+
+      - name: Zip Docker image
+        run: |
+          zip gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.zip gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.tar
+
+      - name: Create GitHub Release and upload zip
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.create_tag.outputs.TAG }}
+          files: gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clean up
+        run: |
+          rm gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.tar
+          rm gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.zip
