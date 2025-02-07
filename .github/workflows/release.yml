@@ -1,14 +1,15 @@
-name: Docker Release Workflow
+name: Docker Release Workflow with Auto Tagging
 
 on:
   push:
     branches:
       - main
-    tags:
-      - 'v*'
 
 permissions:
   contents: write
+
+env:
+  DOCKER_IMAGE_NAME: gesture_controlled_presentation_tool_frontend
 
 jobs:
   build-and-release:
@@ -18,58 +19,82 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Generate new tag
+        id: generate_tag
+        run: |
+          git fetch --tags
+          tags=$(git tag -l)
+          
+          latest_tag=$(echo "$tags" | grep -E '^v?0\.[0-9]+\.[0-9]+(-.*)?$' | sort -V | tail -n 1)
+          
+          if [ -n "$latest_tag" ]; then
+            if [[ "$latest_tag" == v* ]]; then
+              latest_tag="${latest_tag#v}"
+            fi
+          
+            base_version=$(echo "$latest_tag" | sed 's/-.*//')
+          
+            major=$(echo "$base_version" | cut -d'.' -f1)
+            minor=$(echo "$base_version" | cut -d'.' -f2)
+            patch=$(echo "$base_version" | cut -d'.' -f3)
+          
+            new_patch=$((patch + 1))
+          
+            new_tag="v${major}.${minor}.${new_patch}-dev"
+          else
+            new_tag="v0.0.1-dev"
+          fi
+          
+          echo "New tag: $new_tag"
+          echo "NEW_TAG=$new_tag" >> $GITHUB_ENV
+          
+          git tag $new_tag
+          git push origin $new_tag
+
       - name: Set up Docker Compose
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
-      - name: Get the Git tag
-        id: get_tag
-        run: |
-          TAG="${GITHUB_REF##*/}"
-          echo "Tag is: $TAG"
-          echo "TAG=$TAG" >> $GITHUB_ENV
-
       - name: Build Docker image using Docker Compose
         run: |
-          # Budowanie obrazu z użyciem docker-compose
           docker-compose -f docker-compose.yml build --no-cache
 
-      - name: Tag Docker image as latest
+      - name: Tag Docker image
         run: |
-          docker tag gesture_controlled_presentation_tool_frontend:latest gesture_controlled_presentation_tool_frontend:latest
+          docker tag ${{ env.DOCKER_IMAGE_NAME }}:latest ${{ env.DOCKER_IMAGE_NAME }}:${{ env.NEW_TAG }}
 
       - name: Save Docker image as tar
         run: |
-          docker save -o gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.tar gesture_controlled_presentation_tool_frontend:latest
+          docker save -o ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.tar ${{ env.DOCKER_IMAGE_NAME }}:${{ env.NEW_TAG }}
 
       - name: Zip Docker image
         run: |
-          zip gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.zip gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.tar
+          zip ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.zip ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.tar
 
       - name: Create README file with instructions
         run: |
           echo "To run the application with Docker, follow these steps:" > ToDo.txt
           echo "1. Download and unzip the release file." >> ToDo.txt
           echo "2. Run the following command to load the Docker image:" >> ToDo.txt
-          echo "   docker load -i gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.tar" >> ToDo.txt
+          echo "   docker load -i ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.tar" >> ToDo.txt
           echo "3. Start the application by running this command:" >> ToDo.txt
-          echo "   docker run -d -p 3000:3000 gesture_controlled_presentation_tool_frontend:latest" >> ToDo.txt
+          echo "   docker run -d -p 3000:3000 ${{ env.DOCKER_IMAGE_NAME }}:${{ env.NEW_TAG }}" >> ToDo.txt
           echo "4. Visit http://localhost:3000 to view the application." >> ToDo.txt
 
-      - name: Create GitHub Release and upload zip and ToDo.txt
+      - name: Create GitHub Release and upload artifacts
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.TAG }}
-          release_name: "Release ${{ env.TAG }}"
+          tag_name: ${{ env.NEW_TAG }}
+          release_name: "Release ${{ env.NEW_TAG }}"
           files: |
-            gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.zip
+            ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.zip
             ToDo.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Clean up
         run: |
-          rm gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.tar
-          rm gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.zip
+          rm ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.tar
+          rm ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.zip
           rm ToDo.txt
