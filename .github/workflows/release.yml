@@ -23,35 +23,39 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
-      - name: Create tag for release
-        id: create_tag
+      - name: Get the Git tag
+        id: get_tag
         run: |
-          TAG="v0.0.2"
-          echo "Created tag: $TAG"
-          git tag $TAG
-          git push origin $TAG
+          TAG="${GITHUB_REF##*/}"
+          echo "Tag is: $TAG"
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       - name: Build Docker image using Docker Compose
         run: |
-          docker-compose -f docker-compose.yml build 
+          # Dynamically set the tag for the image
+          docker-compose -f docker-compose.yml build --no-cache
+
+      - name: Tag Docker image with Git tag
+        run: |
+          docker tag gesture_controlled_presentation_tool_frontend:latest gesture_controlled_presentation_tool_frontend:${{ env.TAG }}
 
       - name: Save Docker image as tar
         run: |
-          docker save -o gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.tar gesture_controlled_presentation_tool_frontend:${{ steps.create_tag.outputs.TAG }}
+          docker save -o gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.tar gesture_controlled_presentation_tool_frontend:${{ env.TAG }}
 
       - name: Zip Docker image
         run: |
-          zip gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.zip gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.tar
+          zip gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.zip gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.tar
 
       - name: Create GitHub Release and upload zip
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.create_tag.outputs.TAG }}
-          files: gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.zip
+          tag_name: ${{ env.TAG }}
+          files: gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Clean up
         run: |
-          rm gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.tar
-          rm gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.zip
+          rm gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.tar
+          rm gesture_controlled_presentation_tool_frontend-${{ env.TAG }}.zip
