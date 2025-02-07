@@ -7,6 +7,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
@@ -24,17 +27,17 @@ jobs:
           TAG="v0.0.1"  # Możesz zmieniać tag na odpowiednią wersję
           echo "Created tag: $TAG"
           git tag $TAG
-          git push origin $TAG
+          git push origin $TAG  # Teraz używamy push'a z odpowiednimi uprawnieniami
 
       - name: Build Docker image
         run: |
           docker build -t gesture_controlled_presentation_tool_frontend:${{ steps.create_tag.outputs.TAG }} .
 
-      - name: Save Docker image as tar
+      - name: Save Docker image as tar file
         run: |
           docker save -o gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.tar gesture_controlled_presentation_tool_frontend:${{ steps.create_tag.outputs.TAG }}
 
-      - name: Zip Docker image
+      - name: Zip Docker image tar file
         run: |
           zip gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.zip gesture_controlled_presentation_tool_frontend-${{ steps.create_tag.outputs.TAG }}.tar
 
