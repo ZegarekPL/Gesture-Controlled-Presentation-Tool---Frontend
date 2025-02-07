@@ -26,7 +26,7 @@ jobs:
       - name: Create tag for release
         id: create_tag
         run: |
-          TAG="v0.0.1"  # Możesz zmieniać tag na odpowiednią wersję
+          TAG="v0.0.2"
           echo "Created tag: $TAG"
           git tag $TAG
           git push origin $TAG
