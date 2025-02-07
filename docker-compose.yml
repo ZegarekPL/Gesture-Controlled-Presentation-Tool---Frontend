@@ -1,0 +1,14 @@
+services:
+  frontend:
+    image: gesture_controlled_presentation_tool_frontend
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 3000:3000
+    networks:
+      - Gesture-Controlled-Presentation-Tool
+
+networks:
+  Gesture-Controlled-Presentation-Tool:
+    driver: bridge
