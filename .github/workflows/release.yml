@@ -104,7 +104,6 @@ jobs:
 
           git tag $new_tag
           git push origin $new_tag
-      
 
       - name: Set up Docker Compose
         run: |
