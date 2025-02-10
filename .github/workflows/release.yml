@@ -49,15 +49,16 @@ jobs:
             latest_tag="HEAD"  # Domyślnie HEAD, gdy brak poprzedniego tagu
           fi
 
-          # Sprawdzamy commit messages od ostatniego tag
+          # Sprawdzamy commit messages od ostatniego tagu
           commits=$(git log ${latest_tag}..HEAD --pretty=%B 2>/dev/null || echo "")
 
           # Ustawiamy domyślnie patch
           version_type="patch"
           has_feat_commit=false
           has_fix_commit=false
+          has_release_commit=false
 
-          # Sprawdzamy, czy są commity feat lub fix
+          # Sprawdzamy, czy są commity feat, fix lub Release
           if echo "$commits" | grep -q '^feat'; then
             has_feat_commit=true
           fi
@@ -66,8 +67,14 @@ jobs:
             has_fix_commit=true
           fi
 
-          # Priorytetowo traktujemy feat, następnie fix
-          if [ "$has_feat_commit" = true ]; then
+          if echo "$commits" | grep -q 'Release'; then
+            has_release_commit=true
+          fi
+
+          # Priorytetowo traktujemy 'Release' -> 'feat' -> 'fix'
+          if [ "$has_release_commit" = true ]; then
+            version_type="major"
+          elif [ "$has_feat_commit" = true ]; then
             version_type="minor"
           elif [ "$has_fix_commit" = true ]; then
             version_type="patch"
@@ -97,6 +104,7 @@ jobs:
 
           git tag $new_tag
           git push origin $new_tag
+      
 
       - name: Set up Docker Compose
         run: |
