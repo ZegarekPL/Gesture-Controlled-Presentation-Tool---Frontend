@@ -49,7 +49,7 @@ jobs:
             latest_tag="HEAD"  # Domyślnie HEAD, gdy brak poprzedniego tagu
           fi
 
-          # Sprawdzamy commit messages od ostatniego tagu
+          # Sprawdzamy commit messages od ostatniego tag
           commits=$(git log ${latest_tag}..HEAD --pretty=%B 2>/dev/null || echo "")
 
           # Ustawiamy domyślnie patch
