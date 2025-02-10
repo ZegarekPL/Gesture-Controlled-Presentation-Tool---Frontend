@@ -52,7 +52,7 @@ jobs:
           # Sprawdzamy commit messages od ostatniego tagu
           commits=$(git log ${latest_tag}..HEAD --pretty=%B 2>/dev/null || echo "")
 
-          # Ustawiamy domyślnie patcha
+          # Ustawiamy domyślnie patch
           version_type="patch"
 
           if echo "$commits" | grep -q 'Release'; then
