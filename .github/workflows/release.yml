@@ -46,10 +46,11 @@ jobs:
             major=0
             minor=0
             patch=0
+            latest_tag="HEAD"  # Domyślnie HEAD, gdy brak poprzedniego tagu
           fi
 
           # Sprawdzamy commit messages od ostatniego tagu
-          commits=$(git log ${latest_tag}..HEAD --pretty=%B)
+          commits=$(git log ${latest_tag}..HEAD --pretty=%B 2>/dev/null || echo "")
 
           # Ustawiamy domyślnie patch
           version_type="patch"
@@ -86,6 +87,7 @@ jobs:
 
           git tag $new_tag
           git push origin $new_tag
+      
 
       - name: Set up Docker Compose
         run: |
