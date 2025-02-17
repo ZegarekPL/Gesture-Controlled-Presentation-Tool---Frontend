@@ -3,7 +3,7 @@ name: Docker Release Workflow with Auto Tagging
 on:
   push:
     branches:
-      - dev
+      - main
   workflow_dispatch:
     inputs:
       version_type:

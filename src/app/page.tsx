@@ -81,14 +81,7 @@ export default function Home() {
 	};
 
 	return (
-		<div className="flex h-svh">
-			{isSidebarOpen && (
-				<div
-					className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
-					onClick={() => setIsSidebarOpen(false)}
-				></div>
-			)}
-
+		<div className="flex w-full h-full">
 			<Sidebar
 				slides={slides}
 				selectedSlide={selectedSlide}
@@ -102,7 +95,7 @@ export default function Home() {
 				onClose={() => setIsSidebarOpen(false)}
 			/>
 
-			<div className="flex-1 md:w-5/6 h-full bg-lightbackground">
+			<div className="flex-1 md:w-5/6 h-svh bg-lightbackground">
 				<div className="md:hidden p-2">
 					<button onClick={() => setIsSidebarOpen(true)}>
 						<IoMdMenu size={24} />

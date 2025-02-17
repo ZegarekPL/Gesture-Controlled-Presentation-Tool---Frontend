@@ -30,7 +30,7 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
 		}
 	}, [slide]);
 
-	const getMousePos = (e: React.MouseEvent<HTMLCanvasElement>) => {
+	const getPos = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
 		if (!canvasRef.current) {
 			return { x: 0, y: 0 };
 		}
@@ -38,16 +38,29 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
 		const scaleX = canvasRef.current.width / rect.width;
 		const scaleY = canvasRef.current.height / rect.height;
 
+		let x = 0, y = 0;
+		if ('touches' in e) {
+			// For touch events
+			x = e.touches[0].clientX;
+			y = e.touches[0].clientY;
+		} else {
+			// For mouse events
+			x = e.clientX;
+			y = e.clientY;
+		}
+
 		return {
-			x: (e.clientX - rect.left) * scaleX,
-			y: (e.clientY - rect.top) * scaleY
+			x: (x - rect.left) * scaleX,
+			y: (y - rect.top) * scaleY,
 		};
 	};
 
-	const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
+	const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+		e.preventDefault(); // Important to prevent default touch behavior
+
 		if (!canvasRef.current) return;
 
-		const pos = getMousePos(e);
+		const pos = getPos(e);
 		setLastPos(pos);
 		setDrawing(true);
 
@@ -58,10 +71,12 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
 		}
 	};
 
-	const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
+	const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+		e.preventDefault(); // Prevents scrolling or pinch-zoom on mobile devices
+
 		if (!drawing || !canvasRef.current || !lastPos) return;
 
-		const pos = getMousePos(e);
+		const pos = getPos(e);
 		const ctx = canvasRef.current.getContext('2d');
 		if (!ctx) return;
 
@@ -99,6 +114,10 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
 					onMouseMove={draw}
 					onMouseUp={stopDrawing}
 					onMouseLeave={stopDrawing}
+					onTouchStart={startDrawing}
+					onTouchMove={draw}
+					onTouchEnd={stopDrawing}
+					onTouchCancel={stopDrawing}
 				/>
 			</div>
 
