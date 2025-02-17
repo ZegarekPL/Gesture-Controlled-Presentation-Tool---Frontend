@@ -21,7 +21,7 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (slide.image) {
+        if (slide && slide.image) {
             const img = new Image();
             img.src = slide.image;
             img.onload = () => {

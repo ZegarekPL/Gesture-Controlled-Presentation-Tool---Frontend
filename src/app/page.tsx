@@ -74,8 +74,8 @@ export default function Home() {
         if (slides.length > 1) {
             const newSlides = slides.filter((_, i) => i !== index);
             setSlides(newSlides);
-            if (selectedSlide === index) {
-                setSelectedSlide(index > 0 ? index - 1 : 0);
+            if (selectedSlide >= newSlides.length) {
+                setSelectedSlide(newSlides.length - 1);
             }
         }
     };
