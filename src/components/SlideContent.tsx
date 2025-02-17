@@ -1,110 +1,127 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Slide } from "../app/page";
+import React, { useRef, useEffect, useState } from 'react';
+import { Slide } from '@/app/page';
 
 interface SlideContentProps {
-    slide: Slide;
-    onSaveImage: (imageUrl: string) => void;
+	slide: Slide;
+	onSaveImage: (imageUrl: string) => void;
 }
 
 const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const [drawing, setDrawing] = useState<boolean>(false);
-    const [lastPos, setLastPos] = useState<{ x: number; y: number } | null>(null);
-    const [tool, setTool] = useState<"pencil" | "eraser">("pencil");
+	const canvasRef = useRef<HTMLCanvasElement | null>(null);
+	const [drawing, setDrawing] = useState(false);
+	const [lastPos, setLastPos] = useState<{ x: number; y: number } | null>(null);
+	const [tool, setTool] = useState<'pencil' | 'eraser'>('pencil');
 
-    // Za każdym razem, gdy zmienia się slajd, ładujemy zapisany obraz (jeśli istnieje)
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (canvas) {
-            const ctx = canvas.getContext("2d");
-            if (ctx) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                if (slide.image) {
-                    const img = new Image();
-                    img.src = slide.image;
-                    img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                }
-            }
-        }
-    }, [slide]);
+	useEffect(() => {
+		const canvas = canvasRef.current;
+		if (!canvas) return;
 
-    const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        if (!canvasRef.current) return;
-        const rect = canvasRef.current.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        setLastPos({ x, y });
-        setDrawing(true);
-        const ctx = canvasRef.current.getContext("2d");
-        if (ctx) {
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-        }
-    };
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
 
-    const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        if (!drawing || !canvasRef.current || !lastPos) return;
-        const rect = canvasRef.current.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const ctx = canvasRef.current.getContext("2d");
-        if (!ctx) return;
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (tool === "pencil") {
-            ctx.strokeStyle = "#000";
-            ctx.lineWidth = 2;
-            ctx.lineTo(x, y);
-            ctx.stroke();
-        } else if (tool === "eraser") {
-            ctx.clearRect(x - 10, y - 10, 20, 20);
-        }
-        setLastPos({ x, y });
-    };
+		if (slide.image) {
+			const img = new Image();
+			img.src = slide.image;
+			img.onload = () => {
+				ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+			};
+		}
+	}, [slide]);
 
-    // Po zakończeniu rysowania zapisujemy zawartość canvasu jako URL obrazu
-    const stopDrawing = () => {
-        setDrawing(false);
-        setLastPos(null);
-        if (canvasRef.current) {
-            const imageUrl = canvasRef.current.toDataURL();
-            onSaveImage(imageUrl);
-        }
-    };
+	const getMousePos = (e: React.MouseEvent<HTMLCanvasElement>) => {
+		if (!canvasRef.current) {
+			return { x: 0, y: 0 };
+		}
+		const rect = canvasRef.current.getBoundingClientRect();
+		const scaleX = canvasRef.current.width / rect.width;
+		const scaleY = canvasRef.current.height / rect.height;
 
-    return (
-        <div className="w-5/6 p-6 bg-lightbackground">
-            <h1 className="text-2xl font-bold mb-2">{slide.title}</h1>
-            <p className="mb-4">{slide.content}</p>
-            <canvas
-                ref={canvasRef}
-                width={800}
-                height={600}
-                className="border border-gray-400"
-                onMouseDown={startDrawing}
-                onMouseMove={draw}
-                onMouseUp={stopDrawing}
-                onMouseLeave={stopDrawing}
-            />
-            <div className="mt-4">
-                <button
-                    onClick={() => setTool("pencil")}
-                    className={`mr-2 p-2 rounded ${
-                        tool === "pencil" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
-                    }`}
-                >
-                    Ołówek
-                </button>
-                <button
-                    onClick={() => setTool("eraser")}
-                    className={`p-2 rounded ${
-                        tool === "eraser" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
-                    }`}
-                >
-                    Gumka
-                </button>
-            </div>
-        </div>
-    );
+		return {
+			x: (e.clientX - rect.left) * scaleX,
+			y: (e.clientY - rect.top) * scaleY
+		};
+	};
+
+	const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
+		if (!canvasRef.current) return;
+
+		const pos = getMousePos(e);
+		setLastPos(pos);
+		setDrawing(true);
+
+		const ctx = canvasRef.current.getContext('2d');
+		if (ctx) {
+			ctx.beginPath();
+			ctx.moveTo(pos.x, pos.y);
+		}
+	};
+
+	const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
+		if (!drawing || !canvasRef.current || !lastPos) return;
+
+		const pos = getMousePos(e);
+		const ctx = canvasRef.current.getContext('2d');
+		if (!ctx) return;
+
+		if (tool === 'pencil') {
+			ctx.strokeStyle = '#000';
+			ctx.lineWidth = 2;
+			ctx.lineTo(pos.x, pos.y);
+			ctx.stroke();
+		} else if (tool === 'eraser') {
+			ctx.clearRect(pos.x - 10, pos.y - 10, 20, 20);
+		}
+
+		setLastPos(pos);
+	};
+
+	const stopDrawing = () => {
+		setDrawing(false);
+		setLastPos(null);
+
+		if (canvasRef.current) {
+			const imageUrl = canvasRef.current.toDataURL();
+			onSaveImage(imageUrl);
+		}
+	};
+
+	return (
+		<div className="w-5/6 p-6 bg-lightbackground">
+			<div className="relative w-full aspect-video border border-gray-400">
+				<canvas
+					ref={canvasRef}
+					width={1600}
+					height={900}
+					className="absolute top-0 left-0 w-full h-full"
+					onMouseDown={startDrawing}
+					onMouseMove={draw}
+					onMouseUp={stopDrawing}
+					onMouseLeave={stopDrawing}
+				/>
+			</div>
+
+			<div className="mt-4">
+				<button
+					onClick={() => setTool('pencil')}
+					className={`mr-2 p-2 rounded ${
+						tool === 'pencil' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+					}`}
+				>
+					Ołówek
+				</button>
+				<button
+					onClick={() => setTool('eraser')}
+					className={`p-2 rounded ${
+						tool === 'eraser' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+					}`}
+				>
+					Gumka
+				</button>
+			</div>
+		</div>
+	);
 };
 
 export default SlideContent;
