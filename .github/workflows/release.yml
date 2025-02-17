@@ -121,15 +121,6 @@ jobs:
         run: |
           zip ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.zip ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.tar ToDo.txt
 
-      - name: Create Pull Request to main branch
-        uses: peter-evans/create-pull-request@v4
-        with:
-          title: "Release ${{ env.NEW_TAG }}"
-          body: "This pull request includes the release for version ${{ env.NEW_TAG }}."
-          base: main
-          head: ${{ github.sha }}
-          draft: true # Ustawiamy PR jako draft, aby nie był od razu scalany
-
       - name: Create GitHub Release and upload artifacts
         uses: softprops/action-gh-release@v1
         with:
