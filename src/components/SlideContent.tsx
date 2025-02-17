@@ -88,7 +88,7 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
 	};
 
 	return (
-		<div className="w-5/6 p-6 bg-lightbackground">
+		<div className="w-full p-6 bg-lightbackground">
 			<div className="relative w-full aspect-video border border-gray-400">
 				<canvas
 					ref={canvasRef}
