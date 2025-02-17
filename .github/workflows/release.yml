@@ -1,9 +1,6 @@
-name: Docker Release Workflow with Auto Tagging
+name: Release
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       version_type:
@@ -145,6 +142,4 @@ jobs:
 
       - name: Clean up
         run: |
-          rm ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.tar
-          rm ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.zip
-          rm ToDo.txt
+          rm ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }
