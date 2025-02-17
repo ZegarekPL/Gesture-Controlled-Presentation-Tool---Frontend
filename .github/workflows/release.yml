@@ -18,6 +18,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 env:
   DOCKER_IMAGE_NAME: gesture_controlled_presentation_tool_frontend
@@ -29,6 +30,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Ensure version type is selected
+        run: |
+          if [[ -z "${{ github.event.inputs.version_type }}" ]]; then
+            echo "Error: version_type is not selected!" 
+            exit 1
+          fi
 
       - name: Generate new tag based on version type
         id: generate_tag
@@ -115,6 +123,14 @@ jobs:
       - name: Zip Docker image and ToDo.txt
         run: |
           zip ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.zip ${{ env.DOCKER_IMAGE_NAME }}-${{ env.NEW_TAG }}.tar ToDo.txt
+
+      - name: Create Pull Request to main branch
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: "Release ${{ env.NEW_TAG }}"
+          body: "This pull request includes the release for version ${{ env.NEW_TAG }}."
+          base: main
+          head: ${{ github.sha }}
 
       - name: Create GitHub Release and upload artifacts
         uses: softprops/action-gh-release@v1
