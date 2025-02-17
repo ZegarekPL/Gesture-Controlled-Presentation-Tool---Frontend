@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Slide } from "../app/page";
+import React, { useRef, useEffect, useState } from 'react';
+import { Slide } from '@/app/page';
 
 interface SlideContentProps {
     slide: Slide;
@@ -8,63 +8,94 @@ interface SlideContentProps {
 
 const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const [drawing, setDrawing] = useState<boolean>(false);
+    const [drawing, setDrawing] = useState(false);
     const [lastPos, setLastPos] = useState<{ x: number; y: number } | null>(null);
-    const [tool, setTool] = useState<"pencil" | "eraser">("pencil");
+    const [tool, setTool] = useState<'pencil' | 'eraser'>('pencil');
 
-    // Za każdym razem, gdy zmienia się slajd, ładujemy zapisany obraz (jeśli istnieje)
     useEffect(() => {
         const canvas = canvasRef.current;
-        if (canvas) {
-            const ctx = canvas.getContext("2d");
-            if (ctx) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                if (slide.image) {
-                    const img = new Image();
-                    img.src = slide.image;
-                    img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                }
-            }
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (slide && slide.image) {
+            const img = new Image();
+            img.src = slide.image;
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            };
         }
     }, [slide]);
 
-    const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        if (!canvasRef.current) return;
+    const getPos = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+        if (!canvasRef.current) {
+            return { x: 0, y: 0 };
+        }
         const rect = canvasRef.current.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        setLastPos({ x, y });
+        const scaleX = canvasRef.current.width / rect.width;
+        const scaleY = canvasRef.current.height / rect.height;
+
+        let x = 0, y = 0;
+        if ('touches' in e) {
+            // For touch events
+            x = e.touches[0].clientX;
+            y = e.touches[0].clientY;
+        } else {
+            // For mouse events
+            x = e.clientX;
+            y = e.clientY;
+        }
+
+        return {
+            x: (x - rect.left) * scaleX,
+            y: (y - rect.top) * scaleY,
+        };
+    };
+
+    const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+        e.preventDefault(); // Important to prevent default touch behavior
+
+        if (!canvasRef.current) return;
+
+        const pos = getPos(e);
+        setLastPos(pos);
         setDrawing(true);
-        const ctx = canvasRef.current.getContext("2d");
+
+        const ctx = canvasRef.current.getContext('2d');
         if (ctx) {
             ctx.beginPath();
-            ctx.moveTo(x, y);
+            ctx.moveTo(pos.x, pos.y);
         }
     };
 
-    const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+        e.preventDefault(); // Prevents scrolling or pinch-zoom on mobile devices
+
         if (!drawing || !canvasRef.current || !lastPos) return;
-        const rect = canvasRef.current.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const ctx = canvasRef.current.getContext("2d");
+
+        const pos = getPos(e);
+        const ctx = canvasRef.current.getContext('2d');
         if (!ctx) return;
 
-        if (tool === "pencil") {
-            ctx.strokeStyle = "#000";
+        if (tool === 'pencil') {
+            ctx.strokeStyle = '#000';
             ctx.lineWidth = 2;
-            ctx.lineTo(x, y);
+            ctx.lineTo(pos.x, pos.y);
             ctx.stroke();
-        } else if (tool === "eraser") {
-            ctx.clearRect(x - 10, y - 10, 20, 20);
+        } else if (tool === 'eraser') {
+            ctx.clearRect(pos.x - 10, pos.y - 10, 20, 20);
         }
-        setLastPos({ x, y });
+
+        setLastPos(pos);
     };
 
-    // Po zakończeniu rysowania zapisujemy zawartość canvasu jako URL obrazu
     const stopDrawing = () => {
         setDrawing(false);
         setLastPos(null);
+
         if (canvasRef.current) {
             const imageUrl = canvasRef.current.toDataURL();
             onSaveImage(imageUrl);
@@ -72,32 +103,37 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
     };
 
     return (
-        <div className="w-5/6 p-6 bg-lightbackground">
-            <h1 className="text-2xl font-bold mb-2">{slide.title}</h1>
-            <p className="mb-4">{slide.content}</p>
-            <canvas
-                ref={canvasRef}
-                width={800}
-                height={600}
-                className="border border-gray-400"
-                onMouseDown={startDrawing}
-                onMouseMove={draw}
-                onMouseUp={stopDrawing}
-                onMouseLeave={stopDrawing}
-            />
+        <div className="w-full p-6 bg-lightbackground">
+            <div className="relative w-full aspect-video border border-gray-400">
+                <canvas
+                    ref={canvasRef}
+                    width={1600}
+                    height={900}
+                    className="absolute top-0 left-0 w-full h-full"
+                    onMouseDown={startDrawing}
+                    onMouseMove={draw}
+                    onMouseUp={stopDrawing}
+                    onMouseLeave={stopDrawing}
+                    onTouchStart={startDrawing}
+                    onTouchMove={draw}
+                    onTouchEnd={stopDrawing}
+                    onTouchCancel={stopDrawing}
+                />
+            </div>
+
             <div className="mt-4">
                 <button
-                    onClick={() => setTool("pencil")}
+                    onClick={() => setTool('pencil')}
                     className={`mr-2 p-2 rounded ${
-                        tool === "pencil" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
+                        tool === 'pencil' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
                     }`}
                 >
                     Ołówek
                 </button>
                 <button
-                    onClick={() => setTool("eraser")}
+                    onClick={() => setTool('eraser')}
                     className={`p-2 rounded ${
-                        tool === "eraser" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
+                        tool === 'eraser' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
                     }`}
                 >
                     Gumka

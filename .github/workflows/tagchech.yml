@@ -3,7 +3,7 @@ name: Auto Tagging
 on:
   push:
     branches:
-      - main
+      - aaa
   workflow_dispatch:
     inputs:
       version_type:
