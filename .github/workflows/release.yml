@@ -10,6 +10,11 @@ on:
         description: 'Select version type (major, minor, fix)'
         required: true
         default: 'fix'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
 
 permissions:
   contents: write
@@ -24,12 +29,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Wait for version type input
-        id: wait_for_version
-        run: |
-          echo "Waiting for version_type to be selected"
-          echo "version_type=${{ github.event.inputs.version_type }}" >> $GITHUB_ENV
 
       - name: Generate new tag based on version type
         id: generate_tag
@@ -55,7 +54,7 @@ jobs:
             latest_tag="HEAD"
           fi
 
-          version_type="${{ env.version_type }}"
+          version_type="${{ github.event.inputs.version_type }}"
 
           # Zwiększamy odpowiednią wersję na podstawie ręcznego wyboru
           case $version_type in
