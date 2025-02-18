@@ -1,0 +1,174 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{enumitem}
+
+\geometry{
+    a4paper,
+    total={170mm,257mm},
+    left=20mm,
+    top=20mm,
+}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\tiny\ttfamily,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={async, const, let, var, function, return, if, else, for, while, do, switch, case, break, continue, new, try, catch, throw, typeof, instanceof},
+  keywordstyle=\color{magenta}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this, await},
+  ndkeywordstyle=\color{blue}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{codegreen}\ttfamily,
+  stringstyle=\color{codepurple}\ttfamily,
+  morestring=[b]',
+  morestring=[b]",
+  basicstyle=\tiny\ttfamily
+}
+
+\begin{document}
+\begin{titlepage}
+    \begin{center}
+        \vspace*{2cm}
+        {\huge\bfseries Prezentacja sterowana gestami\par}
+        \vspace{1.5cm}
+        {\Large\itshape Dokumentacja Projektowa\par}
+        \vspace{1.5cm}
+        {\large Autor:\par}
+        {\large\bfseries Filip Kula, Wiktor Mazur\par}
+        \vspace{1cm}
+        {\large Przedmiot:\par}
+        {\large\itshape Interakcja Człowiek - Komputer\par}
+    \end{center}
+\end{titlepage}
+
+\newpage
+
+\section{Wprowadzenie}
+Projekt zakłada wykonanie prostego systemu do prezentacji zarządzanego gestami dłoni.
+
+\section{Architektura systemu}
+\subsection{Komponenty główne}
+\begin{itemize}
+    \item \textbf{Frontend}: Next.js + React
+    \item \textbf{Detekcja gestów}: MediaPipe Hands
+    \item \textbf{Routing}: Next.js Router
+    \item \textbf{Zarządzanie stanem}: React Hooks
+\end{itemize}
+
+\subsection{Struktura projektu}
+\begin{itemize}
+    \item docs/
+    \item src/
+    \begin{itemize}
+        \item app/
+        \begin{itemize}
+            \item layout.tsx
+            \item page.tsx
+        \end{itemize}
+        \item components/
+        \begin{itemize}
+            \item HandGestureControls.tsx
+            \item Sidebar.tsx
+            \item SlideContent.tsx
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\section{Funkcjonalności}
+\subsection{Kontrola gestów}
+System wykorzystuje MediaPipe Hands do detekcji i śledzenia ruchów dłoni. Zaimplementowane gesty:
+\begin{itemize}
+    \item Wskazanie w lewo - wcześniejszy slajd
+    \item Wskazanie w prawo - następny slajd
+\end{itemize}
+
+\section{Implementacja}
+\subsection{Detekcja gestów}
+\begin{lstlisting}[language=JavaScript]
+const gestureDetection = async (frame) => {
+  const hands = new mp.Hands({
+    maxNumHands: 1,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5
+  });
+  
+  // Przetwarzanie klatki wideo
+  const results = await hands.process(frame);
+  return results.multiHandLandmarks;
+};
+\end{lstlisting}
+
+\subsection{Komponent rysowania}
+\begin{lstlisting}[language=JavaScript]
+const DrawingCanvas = ({ slideId }) => {
+  const canvasRef = useRef(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  
+  // Logika rysowania
+  const startDrawing = (e) => {
+    setIsDrawing(true);
+    const ctx = canvasRef.current.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(e.clientX, e.clientY);
+  };
+};
+\end{lstlisting}
+
+\subsection{Wymagania programowe}
+\begin{itemize}
+    \item Nowoczesna przeglądarka internetowa (Chrome 88+, Firefox 85+, Safari 14+)
+    \item Obsługa WebGL
+    \item Włączona obsługa JavaScript
+    \item Dostęp do kamery
+\end{itemize}
+
+\section{Instalacja i uruchomienie}
+\subsection{Instalacja zależności}
+\begin{lstlisting}[language=bash]
+npm install
+# lub
+yarn install
+\end{lstlisting}
+
+\subsection{Uruchomienie}
+\begin{lstlisting}[language=bash]
+npm run dev
+# lub
+yarn dev
+\end{lstlisting}
+
+\end{document}
