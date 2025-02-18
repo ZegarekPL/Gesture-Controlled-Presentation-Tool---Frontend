@@ -157,14 +157,35 @@ const DrawingCanvas = ({ slideId }) => {
 \end{itemize}
 
 \section{Instalacja i uruchomienie}
-\subsection{Instalacja zależności}
+
+\subsection{Za pomocą Docker}
+
+1. Pobierz najnowszą wersję obrazu Dockera z repozytorium na GitHubie:
+\url{https://github.com/ZegarekPL/Gesture-Controlled-Presentation-Tool---Frontend/releases}
+
+2. Po pobraniu pliku z obrazem, załaduj go do Dockera, używając poniższej komendy:
+
+\begin{lstlisting}[language=bash]
+    docker load -i gesture_controlled_presentation_tool_frontend-v0.1.1.tar
+\end{lstlisting}
+
+3. Następnie uruchom aplikację w kontenerze, używając tej komendy:
+
+\begin{lstlisting}[language=bash]
+    docker run -d -p 3000:3000 gesture_controlled_presentation_tool_frontend:v0.1.1
+\end{lstlisting}
+
+4. Po uruchomieniu kontenera, aplikacja będzie dostępna pod adresem: \url{http://localhost:3000}.
+
+\subsection{Za pomocą VSCode/WebStorm}
+\subsubsection{Instalacja zależności}
 \begin{lstlisting}[language=bash]
 npm install
 # lub
 yarn install
 \end{lstlisting}
 
-\subsection{Uruchomienie}
+\subsubsection{Uruchomienie}
 \begin{lstlisting}[language=bash]
 npm run dev
 # lub

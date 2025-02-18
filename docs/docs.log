@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2025.2.18)  18 FEB 2025 17:51
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2025.2.18)  18 FEB 2025 19:56
 entering extended mode
- \write18 enabled.
+ restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/home/fk/projects/Gesture-Controlled-Presentation-Tool---Frontend/docs/docs.tex
-(/home/fk/projects/Gesture-Controlled-Presentation-Tool---Frontend/docs/docs.tex
+**/home/wiktor/Documents/Git/GCPT/GCPT_Frontend/docs/docs.tex
+(/home/wiktor/Documents/Git/GCPT/GCPT_Frontend/docs/docs.tex
 LaTeX2e <2021-11-15> patch level 1
 L3 programming layer <2022-01-21> (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
@@ -32,7 +32,7 @@ Package: inputenc 2021/02/14 v1.3d Input encoding file
 Package: babel 2022/01/26 3.70 The Babel package
 \babel@savecnt=\count193
 \U@D=\dimen139
-\l@unhyphenated=\language36
+\l@unhyphenated=\language4
  (/usr/share/texlive/texmf-dist/tex/generic/babel/txtbabel.def)
 \bbl@readstream=\read2
 \bbl@dirlevel=\count194
@@ -338,27 +338,34 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has b
 <to be read again> 
                    \relax 
 l.136 \begin{lstlisting}[language=JavaScript]
-                                              [1] (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
+                                              [1]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 164.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 164.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 164.
+ (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2020/03/24 1.8d listings language file
 ) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2020/03/24 1.8d listings language file
 ) [2] (./docs.aux)
 Package rerunfilecheck Info: File `docs.out' has not changed.
-(rerunfilecheck)             Checksum: E1C4F369977F63FB753B5D636A60D033;1836.
+(rerunfilecheck)             Checksum: C1C6906A5F64921854D1E87EE8723AA8;2195.
  ) 
 Here is how much of TeX's memory you used:
- 12509 strings out of 479544
- 191834 string characters out of 5876553
- 763267 words of memory out of 5000000
- 30316 multiletter control sequences out of 15000+600000
- 478521 words of font info for 42 fonts, out of 8000000 for 9000
- 415 hyphenation exceptions out of 8191
+ 12545 strings out of 480212
+ 192222 string characters out of 5895275
+ 782954 words of memory out of 5000000
+ 30295 multiletter control sequences out of 15000+600000
+ 481272 words of font info for 51 fonts, out of 8000000 for 9000
+ 34 hyphenation exceptions out of 8191
  60i,5n,63p,287b,1255s stack positions out of 5000i,500n,10000p,200000b,80000s
- </home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0800.450pk> </home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm0600.600pk> </home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1200.600pk> </home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1200.600pk> </home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1728.600pk> </home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1440.600pk> </home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk> </home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1440.600pk> </home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1728.600pk> </home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx2488.600pk>
-Output written on docs.pdf (3 pages, 94904 bytes).
+ </home/wiktor/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1200.600pk> </home/wiktor/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0800.450pk> </home/wiktor/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm0600.600pk> </home/wiktor/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/wiktor/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1200.600pk> </home/wiktor/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1200.600pk> </home/wiktor/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1728.600pk> </home/wiktor/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1440.600pk> </home/wiktor/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk> </home/wiktor/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1440.600pk> </home/wiktor/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1728.600pk> </home/wiktor/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx2488.600pk>
+Output written on docs.pdf (3 pages, 110131 bytes).
 PDF statistics:
- 442 PDF objects out of 1000 (max. 8388607)
- 156 compressed objects within 2 object streams
- 50 named destinations out of 1000 (max. 500000)
- 105 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 511 PDF objects out of 1000 (max. 8388607)
+ 177 compressed objects within 2 object streams
+ 56 named destinations out of 1000 (max. 500000)
+ 121 words of extra memory for PDF output out of 10000 (max. 10000000)
 
