@@ -87,16 +87,24 @@ export default function Home() {
     };
 
     const handleNextSlide = () => {
-        if (selectedSlide < slides.length - 1) {
-            setSelectedSlide(prev => prev + 1);
-        }
+        setSelectedSlide(prev => {
+            if (prev < slides.length - 1) {
+                return prev + 1;
+            }
+            return prev;
+        });
     };
-
+    
     const handlePreviousSlide = () => {
-        if (selectedSlide > 0) {
-            setSelectedSlide(prev => prev - 1);
-        }
+        setSelectedSlide(prev => {
+            if (prev > 0) {
+                return prev - 1;
+            }
+            return prev; 
+        });
     };
+    
+    
 
     return (
         <div className="flex w-full h-full">
