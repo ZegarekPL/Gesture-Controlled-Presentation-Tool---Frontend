@@ -4,6 +4,12 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import SlideContent from '../components/SlideContent';
 import { IoMdMenu } from "react-icons/io";
+import dynamic from 'next/dynamic';
+
+const HandGestureControls = dynamic(
+    () => import('../components/HandGestureControls'),
+    {ssr: false}
+)
 
 export interface Slide {
     image: string;
@@ -80,6 +86,18 @@ export default function Home() {
         }
     };
 
+    function handlePreviousSlide(): void {
+        if(selectedSlide < slides.length - 1){
+            setSelectedSlide(prev => prev + 1);
+        }
+    };
+
+    function handleNextSlide(): void {
+        if (selectedSlide > 0) {
+            setSelectedSlide(prev => prev - 1);
+        }
+    };
+
     return (
         <div className="flex w-full h-full">
             <Sidebar
@@ -105,6 +123,11 @@ export default function Home() {
                 <SlideContent
                     slide={slides[selectedSlide]}
                     onSaveImage={saveImageForSlide}
+                />
+
+                <HandGestureControls
+                    onNextSlide={handleNextSlide}
+                    onPreviousSlide={handlePreviousSlide}                
                 />
             </div>
         </div>
