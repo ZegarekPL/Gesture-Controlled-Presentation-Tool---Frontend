@@ -86,13 +86,13 @@ export default function Home() {
         }
     };
 
-    function handlePreviousSlide(): void {
-        if(selectedSlide < slides.length - 1){
+    const handleNextSlide = () => {
+        if (selectedSlide < slides.length - 1) {
             setSelectedSlide(prev => prev + 1);
         }
     };
 
-    function handleNextSlide(): void {
+    const handlePreviousSlide = () => {
         if (selectedSlide > 0) {
             setSelectedSlide(prev => prev - 1);
         }
