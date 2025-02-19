@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1739922219 "/home/fk/projects/Gesture-Controlled-Presentation-Tool---Frontend/docs/docs.tex" "docs.pdf" "docs" 1739922219
+["pdflatex"] 1739970769 "/home/fk/projects/Gesture-Controlled-Presentation-Tool---Frontend/docs/docs.tex" "docs.pdf" "docs" 1739970770
   "/etc/texmf/web2c/texmf.cnf" 1739893866 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk" 1739895304 31928 6057ebe76a8f56eb78cbe789783a9c00 ""
   "/home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk" 1739895305 40112 7641999996eec9a5a8b22fc3a290a94b ""
@@ -13,7 +13,7 @@
   "/home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0800.450pk" 1739895842 11448 82a59f5e102a29bfe18253acb41453a9 ""
   "/home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1200.600pk" 1739895301 24132 9bf76b37745c0fe6e9e3c5e691b30a77 ""
   "/home/fk/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1200.600pk" 1739894088 14040 5254495202356f0d41d8bb31b9fdcc90 ""
-  "/home/fk/projects/Gesture-Controlled-Presentation-Tool---Frontend/docs/docs.tex" 1739922173 5498 76e608bc8ead2167e3a0d2b5034e592f ""
+  "/home/fk/projects/Gesture-Controlled-Presentation-Tool---Frontend/docs/docs.tex" 1739970769 6862 c43a4db1340029c6d6f8fe0b6e221317 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbx1200.tfm" 1136768653 3584 402da0b29eafbad07963b1224b222f18 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbx1440.tfm" 1136768653 3584 13049b61b922a28b158a38aeff75ee9b ""
@@ -68,6 +68,7 @@
   "/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd" 1622581934 2443 6dd9a5deeddddfcceb01d1932590ebad ""
   "/usr/share/texlive/texmf-dist/tex/latex/enumitem/enumitem.sty" 1561238569 51697 f8f08183cd2080d9d18a41432d651dfb ""
   "/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty" 1579991033 13886 d1306dcf79a944f6988e688c1785f9ce ""
+  "/usr/share/texlive/texmf-dist/tex/latex/float/float.sty" 1137110151 6749 16d2656a1984957e674b149555f1ea1d ""
   "/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty" 1578002852 41601 9cf6c5257b1bc7af01a58859749dd37a ""
   "/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg" 1459978653 1213 620bba36b25224fa9b7e1ccb4ecb76fd ""
   "/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg" 1465944070 1224 978390e9c2234eab29404bc21b268d1e ""
@@ -99,9 +100,12 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1644012257 39432 7155514e09a3d69036fac785183a21c2 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1739896474 4082819 8b0a407a341f592d3ad8117b3fe58ca5 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1739896484 2072898 7b946259c516abf50853b943ced40333 ""
-  "docs.aux" 1739922219 2632 62b3ab8928a79f65d07ec9b559b69f42 "pdflatex"
-  "docs.out" 1739922219 2195 c1c6906a5f64921854d1e87ee8723aa8 "pdflatex"
-  "docs.tex" 1739922173 5498 76e608bc8ead2167e3a0d2b5034e592f ""
+  "docs.aux" 1739970770 2486 6d93e6e43f91963dbdd2be5414687c1a "pdflatex"
+  "docs.out" 1739970770 1940 d1c4771e0f419dd503592e69486c973f "pdflatex"
+  "docs.tex" 1739970769 6862 c43a4db1340029c6d6f8fe0b6e221317 ""
+  "images/lewo.jpg" 1739970711 190728 cd537dc82c4a96c593503308ef33e05a ""
+  "images/piesc.jpg" 1739970711 130166 280a746949f8894addb5aa5c4d6e7fdd ""
+  "images/prawo.jpg" 1739970711 176352 32772cadb02345061c5e313c2f078777 ""
   (generated)
   "docs.aux"
   "docs.log"

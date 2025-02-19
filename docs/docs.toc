@@ -1,9 +1,0 @@
-\babel@toc {polish}{}\relax 
-\contentsline {section}{\numberline {1}Wstęp}{1}{section.1}%
-\contentsline {section}{\numberline {2}Struktura projektu}{1}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Komponent \texttt {HandGestureControls}}{1}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Komponent \texttt {SlideContent}}{1}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Komponent \texttt {Sidebar}}{2}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}Komponent \texttt {RootLayout}}{2}{subsection.2.4}%
-\contentsline {subsection}{\numberline {2.5}Komponent \texttt {Home}}{2}{subsection.2.5}%
-\contentsline {section}{\numberline {3}Podsumowanie}{2}{section.3}%

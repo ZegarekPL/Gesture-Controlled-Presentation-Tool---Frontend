@@ -8,6 +8,7 @@
 \usepackage{hyperref}
 \usepackage{geometry}
 \usepackage{enumitem}
+\usepackage{float}
 
 \geometry{
     a4paper,
@@ -55,7 +56,26 @@
   stringstyle=\color{codepurple}\ttfamily,
   morestring=[b]',
   morestring=[b]",
-  basicstyle=\tiny\ttfamily
+  basicstyle=\tiny\ttfamily,
+  literate=%
+    {ą}{{\k{a}}}1
+    {ć}{{\'c}}1
+    {ę}{{\k{e}}}1
+    {ł}{{\l{}}}1
+    {ń}{{\'n}}1
+    {ó}{{\'o}}1
+    {ś}{{\'s}}1
+    {ż}{{\.z}}1
+    {ź}{{\'z}}1
+    {Ą}{{\k{A}}}1
+    {Ć}{{\'C}}1
+    {Ę}{{\k{E}}}1
+    {Ł}{{\L{}}}1
+    {Ń}{{\'N}}1
+    {Ó}{{\'O}}1
+    {Ś}{{\'S}}1
+    {Ż}{{\.Z}}1
+    {Ź}{{\'Z}}1
 }
 
 \begin{document}
@@ -77,115 +97,137 @@
 \newpage
 
 \section{Wprowadzenie}
-Projekt zakłada wykonanie prostego systemu do prezentacji zarządzanego gestami dłoni.
 
-\section{Architektura systemu}
-\subsection{Komponenty główne}
-\begin{itemize}
-    \item \textbf{Frontend}: Next.js + React
-    \item \textbf{Detekcja gestów}: MediaPipe Hands
-    \item \textbf{Routing}: Next.js Router
-    \item \textbf{Zarządzanie stanem}: React Hooks
-\end{itemize}
+Celem systemu jest zapewnienie interaktywnego sposobu zarządzania prezentacją bez konieczności użycia myszy lub klawiatury. Dzięki zastosowaniu technologii rozpoznawania gestów użytkownik może płynnie sterować slajdami i wykonywać na nich adnotacje.
 
-\subsection{Struktura projektu}
+\section{Technologie}
+
+System został zbudowany w oparciu o następujące technologie:
 \begin{itemize}
-    \item docs/
-    \item src/
-    \begin{itemize}
-        \item app/
-        \begin{itemize}
-            \item layout.tsx
-            \item page.tsx
-        \end{itemize}
-        \item components/
-        \begin{itemize}
-            \item HandGestureControls.tsx
-            \item Sidebar.tsx
-            \item SlideContent.tsx
-        \end{itemize}
-    \end{itemize}
+    \item Next.js - framework do budowy aplikacji webowych,
+    \item MediaPipe Hands - biblioteka do rozpoznawania gestów dłoni,
+    \item Kontekst Canvas API - umożliwia rysowanie na slajdach,
+    \item WebSocket - umożliwia komunikację w czasie rzeczywistym,
+    \item Tailwind CSS - zapewnia estetyczny interfejs użytkownika.
 \end{itemize}
 
 \section{Funkcjonalności}
-\subsection{Kontrola gestów}
-System wykorzystuje MediaPipe Hands do detekcji i śledzenia ruchów dłoni. Zaimplementowane gesty:
+
+\subsection{Zarządzanie slajdami}
+System umożliwia:
 \begin{itemize}
-    \item Wskazanie w lewo - wcześniejszy slajd
-    \item Wskazanie w prawo - następny slajd
+    \item Dodawanie nowych slajdów,
+    \item Usuwanie istniejących slajdów,
+    \item Nawigację między slajdami za pomocą gestów dłoni.
 \end{itemize}
 
+\subsection{Obsługa gestów}
+Do sterowania prezentacją wykorzystano następujące gesty:
+\begin{itemize}
+    \item Wskazanie w prawo - następny slajd,
+    \begin{figure}[H]
+      \includegraphics[width=\textwidth]{images/prawo.jpg}
+    \end{figure}
+    \item Wskazanie w lewo - poprzedni slajd,
+    \begin{figure}[H]
+      \includegraphics[width=\textwidth]{images/lewo.jpg}
+    \end{figure}
+    \item Zaciśnięta pięść - zmiana narzędzi.
+    \begin{figure}[H]
+      \includegraphics[width=\textwidth]{images/piesc.jpg}
+    \end{figure}
+\end{itemize}
+
+\subsection{Narzędzia do rysowania}
+Dostępne są następujące narzędzia:
+\begin{itemize}
+    \item Ołówek - rysowanie po slajdach,
+    \item Gumka - usuwanie rysunków,
+    \item Wskaźnik laserowy - podkreślanie elementów prezentacji.
+\end{itemize}
 \section{Implementacja}
 \subsection{Detekcja gestów}
 \begin{lstlisting}[language=JavaScript]
-const gestureDetection = async (frame) => {
-  const hands = new mp.Hands({
-    maxNumHands: 1,
-    modelComplexity: 1,
-    minDetectionConfidence: 0.5,
-    minTrackingConfidence: 0.5
-  });
-  
-  // Przetwarzanie klatki wideo
-  const results = await hands.process(frame);
-  return results.multiHandLandmarks;
-};
-\end{lstlisting}
+const detectGesture = (landmarks) => {
+  if (!landmarks || landmarks.length === 0) return null;
 
-\subsection{Komponent rysowania}
-\begin{lstlisting}[language=JavaScript]
-const DrawingCanvas = ({ slideId }) => {
-  const canvasRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
+  const hand = landmarks[0];
+  const wrist = hand[0];
+  const thumbTip = hand[4];
+  const indexTip = hand[8];
+  const middleTip = hand[12];
   
-  // Logika rysowania
-  const startDrawing = (e) => {
-    setIsDrawing(true);
-    const ctx = canvasRef.current.getContext('2d');
-    ctx.beginPath();
-    ctx.moveTo(e.clientX, e.clientY);
-  };
+   // Wykrywanie gestu wskazywania
+  const isPointing = 
+    indexTip.y < middleTip.y && 
+    Math.abs(thumbTip.y - wrist.y) < 0.1;
+
+    // Wykrywanie gestu pieści
+  const isFist = indexTip.y > wrist.y - 0.1;
+
+  if (isPointing) {
+    return {
+      type: 'pointing',
+      position: { x: indexTip.x, y: indexTip.y }
+    };
+  }
+  if (isFist) return 'fist';
+  
+  return null;
 };
 \end{lstlisting}
 
 \subsection{Wymagania programowe}
 \begin{itemize}
     \item Nowoczesna przeglądarka internetowa (Chrome 88+, Firefox 85+, Safari 14+)
-    \item Obsługa WebGL
+    \item Obsługa WebGL dla MediaPipe
     \item Włączona obsługa JavaScript
-    \item Dostęp do kamery
+    \item Dostęp do kamery internetowej
+    \item Minimalna rozdzielczość kamery: 640x480
+    \item Stabilne połączenie internetowe (dla ładowania modeli MediaPipe)
 \end{itemize}
 
 \section{Instalacja i uruchomienie}
 
 \subsection{Za pomocą Docker}
-
 1. Pobierz najnowszą wersję obrazu Dockera z repozytorium na GitHubie:
 \url{https://github.com/ZegarekPL/Gesture-Controlled-Presentation-Tool---Frontend/releases}
 
-2. Po pobraniu pliku z obrazem, załaduj go do Dockera, używając poniższej komendy:
-
+2. Załaduj obraz do Dockera:
 \begin{lstlisting}[language=bash]
     docker load -i gesture_controlled_presentation_tool_frontend-v0.1.1.tar
 \end{lstlisting}
 
-3. Następnie uruchom aplikację w kontenerze, używając tej komendy:
-
+3. Uruchom kontener:
 \begin{lstlisting}[language=bash]
     docker run -d -p 3000:3000 gesture_controlled_presentation_tool_frontend:v0.1.1
 \end{lstlisting}
 
-4. Po uruchomieniu kontenera, aplikacja będzie dostępna pod adresem: \url{http://localhost:3000}.
+4. Aplikacja będzie dostępna pod adresem: \url{http://localhost:3000}
 
-\subsection{Za pomocą VSCode/WebStorm}
-\subsubsection{Instalacja zależności}
+\subsection{Instalacja lokalna}
+\subsubsection{Wymagania}
+\begin{itemize}
+    \item Node.js 18+ 
+    \item npm lub yarn
+    \item Git
+\end{itemize}
+
+\subsubsection{Kroki instalacji}
+1. Sklonuj repozytorium:
+\begin{lstlisting}[language=bash]
+git clone https://github.com/ZegarekPL/Gesture-Controlled-Presentation-Tool---Frontend.git
+cd Gesture-Controlled-Presentation-Tool---Frontend
+\end{lstlisting}
+
+2. Zainstaluj zależności:
 \begin{lstlisting}[language=bash]
 npm install
 # lub
 yarn install
 \end{lstlisting}
 
-\subsubsection{Uruchomienie}
+3. Uruchom aplikację w trybie deweloperskim:
 \begin{lstlisting}[language=bash]
 npm run dev
 # lub
