@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Prezentacja sterowana gestami
 
-## Getting Started
+## Opis projektu
+Projekt zakłada stworzenie interaktywnego systemu do prezentacji zarządzanego gestami dłoni. Wykorzystuje technologię MediaPipe Hands do rozpoznawania gestów oraz Next.js + React do budowy interfejsu użytkownika.
 
-First, run the development server:
+## Architektura systemu
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Komponenty główne
+- **Frontend**: Next.js + React
+- **Detekcja gestów**: MediaPipe Hands
+- **Routing**: Next.js Router
+- **Zarządzanie stanem**: React Hooks
+
+### Struktura projektu
+```
+docs/
+src/
+  app/
+    layout.tsx
+    page.tsx
+  components/
+    HandGestureControls.tsx
+    Sidebar.tsx
+    SlideContent.tsx
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Funkcjonalności
+### Kontrola gestów
+System pozwala na sterowanie slajdami za pomocą gestów dłoni:
+- **Wskazanie w lewo** - przejście do poprzedniego slajdu
+- **Wskazanie w prawo** - przejście do następnego slajdu
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Wymagania
+- Nowoczesna przeglądarka internetowa (Chrome 88+, Firefox 85+, Safari 14+)
+- Obsługa WebGL
+- Włączona obsługa JavaScript
+- Dostęp do kamery
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Instalacja i uruchomienie
 
-## Learn More
+### Za pomocą Docker
+1. Pobierz najnowszą wersję obrazu Dockera z repozytorium GitHub:
+   ```
+   https://github.com/ZegarekPL/Gesture-Controlled-Presentation-Tool---Frontend/releases
+   ```
+2. Załaduj obraz do Dockera:
+   ```bash
+   docker load -i gesture_controlled_presentation_tool_frontend-v0.1.1.tar
+   ```
+3. Uruchom aplikację w kontenerze:
+   ```bash
+   docker run -d -p 3000:3000 gesture_controlled_presentation_tool_frontend:v0.1.1
+   ```
+4. Aplikacja będzie dostępna pod adresem: [http://localhost:3000](http://localhost:3000)
 
-To learn more about Next.js, take a look at the following resources:
+### Za pomocą VSCode/WebStorm
+#### Instalacja zależności
+```bash
+npm install
+# lub
+yarn install
+```
+#### Uruchomienie aplikacji
+```bash
+npm run dev
+# lub
+yarn dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Autorzy
+- **Filip Kula**
+- **Wiktor Mazur**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
