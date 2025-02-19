@@ -113,16 +113,13 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage, tool, s
         const ctx = canvasRef.current.getContext('2d');
         if (!ctx) return;
 
-        // Odśwież canvas
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         
-        // Narysuj wskaźnik
         ctx.beginPath();
         ctx.arc(pointerPos.x, pointerPos.y, 5, 0, 2 * Math.PI);
         ctx.fillStyle = 'red';
         ctx.fill();
 
-        // Przywróć zawartość slajdu po krótkim czasie
         const timeout = setTimeout(() => {
             ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
             if (slide && slide.image) {
