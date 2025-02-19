@@ -4,13 +4,15 @@ import { Slide } from '@/app/page';
 interface SlideContentProps {
     slide: Slide;
     onSaveImage: (imageUrl: string) => void;
+    tool: 'pencil' | 'eraser' | 'pointer';
+    setTool: (tool: 'pencil' | 'eraser' | 'pointer') => void;
 }
 
-const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
+const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage, tool, setTool }) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [drawing, setDrawing] = useState(false);
     const [lastPos, setLastPos] = useState<{ x: number; y: number } | null>(null);
-    const [tool, setTool] = useState<'pencil' | 'eraser'>('pencil');
+    const [pointerPos, setPointerPos] = useState<{ x: number; y: number } | null>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -40,11 +42,9 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
 
         let x = 0, y = 0;
         if ('touches' in e) {
-            // For touch events
             x = e.touches[0].clientX;
             y = e.touches[0].clientY;
         } else {
-            // For mouse events
             x = e.clientX;
             y = e.clientY;
         }
@@ -56,7 +56,7 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
     };
 
     const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-        e.preventDefault(); // Important to prevent default touch behavior
+        e.preventDefault();
 
         if (!canvasRef.current) return;
 
@@ -72,11 +72,16 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
     };
 
     const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-        e.preventDefault(); // Prevents scrolling or pinch-zoom on mobile devices
+        e.preventDefault();
+        const pos = getPos(e);
+
+        if(tool === 'pointer'){
+            setPointerPos(pos);
+            return;
+        }
 
         if (!drawing || !canvasRef.current || !lastPos) return;
 
-        const pos = getPos(e);
         const ctx = canvasRef.current.getContext('2d');
         if (!ctx) return;
 
@@ -101,6 +106,36 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
             onSaveImage(imageUrl);
         }
     };
+
+    useEffect(() => {
+        if (!canvasRef.current || !pointerPos || tool !== 'pointer') return;
+
+        const ctx = canvasRef.current.getContext('2d');
+        if (!ctx) return;
+
+        // Odśwież canvas
+        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        
+        // Narysuj wskaźnik
+        ctx.beginPath();
+        ctx.arc(pointerPos.x, pointerPos.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+
+        // Przywróć zawartość slajdu po krótkim czasie
+        const timeout = setTimeout(() => {
+            ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+            if (slide && slide.image) {
+                const img = new Image();
+                img.src = slide.image;
+                img.onload = () => {
+                    ctx.drawImage(img, 0, 0, canvasRef.current!.width, canvasRef.current!.height);
+                };
+            }
+        }, 100);
+
+        return () => clearTimeout(timeout);
+    }, [pointerPos, tool, slide]);
 
     return (
         <div className="w-full p-6 bg-lightbackground">
@@ -137,6 +172,14 @@ const SlideContent: React.FC<SlideContentProps> = ({ slide, onSaveImage }) => {
                     }`}
                 >
                     Gumka
+                </button>
+                <button 
+                    onClick={() => setTool('pointer')}
+                    className={`ml-2 p-2 rounded ${
+                        tool === 'pointer' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+                    }`}
+                >
+                    Wskaźnik
                 </button>
             </div>
         </div>

@@ -19,6 +19,7 @@ export default function Home() {
     const [selectedSlide, setSelectedSlide] = useState<number>(0);
     const [slides, setSlides] = useState<Slide[]>([{ image: '' }]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [currentTool, setCurrentTool] = useState<'pencil' | 'eraser' | 'pointer'>('pencil');
 
     let startX = 0;
     let endX = 0;
@@ -131,11 +132,14 @@ export default function Home() {
                 <SlideContent
                     slide={slides[selectedSlide]}
                     onSaveImage={saveImageForSlide}
+                    tool={currentTool}
+                    setTool={setCurrentTool}
                 />
 
                 <HandGestureControls
                     onNextSlide={handleNextSlide}
-                    onPreviousSlide={handlePreviousSlide}                
+                    onPreviousSlide={handlePreviousSlide}
+                    onToolChange={setCurrentTool}                
                 />
             </div>
         </div>

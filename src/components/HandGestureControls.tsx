@@ -6,17 +6,21 @@ import dynamic from 'next/dynamic';
 interface HandGestureControlsProps {
   onNextSlide: () => void;
   onPreviousSlide: () => void;
+  onToolChange: (tool: 'pencil' | 'eraser' | 'pointer') => void;
 }
 
 const HandGestureControls: React.FC<HandGestureControlsProps> = ({
   onNextSlide,
   onPreviousSlide,
+  onToolChange,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const lastGestureTimeRef = useRef<number>(0);
   const isProcessingGestureRef = useRef<boolean>(false);
   const [currentGesture, setCurrentGesture] = useState<string | null>(null);
+  const toolIndexRef = useRef<number>(0);
+  const [tools] = useState<Array<'pencil' | 'eraser' | 'pointer'>>(['pencil', 'eraser', 'pointer']);
 
   useEffect(() => {
     let hands: any;
@@ -91,63 +95,83 @@ const HandGestureControls: React.FC<HandGestureControlsProps> = ({
 
       const detectGesture = (landmarks: any[]) => {
         if (!landmarks || landmarks.length === 0) return null;
-
+    
         try {
-          const hand = landmarks[0];
-          const thumbTip = hand[4];
-          const indexTip = hand[8];
-          const middleTip = hand[12];
-
-          if (!thumbTip || !indexTip || !middleTip) return null;
-
-          const isSwipeLeft =
-            thumbTip.x < indexTip.x &&
-            Math.abs(thumbTip.y - indexTip.y) < 0.1 &&
-            middleTip.y > indexTip.y;
-
-          const isSwipeRight =
-            thumbTip.x > indexTip.x &&
-            Math.abs(thumbTip.y - indexTip.y) < 0.1 &&
-            middleTip.y > indexTip.y;
-
-          if (isSwipeLeft) return 'swipeLeft';
-          if (isSwipeRight) return 'swipeRight';
+            const hand = landmarks[0];
+            
+            const wrist = hand[0];
+            const thumbTip = hand[4];
+            const indexTip = hand[8];
+            const middleTip = hand[12];
+            const ringTip = hand[16];
+            const pinkyTip = hand[20];
+    
+            const referenceY = wrist.y - 0.1;
+            const isFist = indexTip.y > referenceY && 
+                          middleTip.y > referenceY && 
+                          ringTip.y > referenceY && 
+                          pinkyTip.y > referenceY;
+    
+            const isSwipeLeft = 
+                thumbTip.x < indexTip.x &&
+                Math.abs(thumbTip.y - indexTip.y) < 0.15 &&
+                middleTip.y > indexTip.y;
+    
+            const isSwipeRight = 
+                thumbTip.x > indexTip.x &&
+                Math.abs(thumbTip.y - indexTip.y) < 0.15 &&
+                middleTip.y > indexTip.y;
+    
+            if (isFist) {
+                return 'fist';
+            }
+            if (isSwipeLeft) {
+                return 'swipeLeft';
+            }
+            if (isSwipeRight) {
+                return 'swipeRight';
+            }
+    
+            return null;
         } catch (error) {
-          console.error('Błąd podczas wykrywania gestu:', error);
+            console.error('Błąd podczas wykrywania gestu:', error);
+            return null;
         }
-        
-        return null;
-      };
-
-      const handleGesture = (gesture: string | null, landmarks: any[]) => {
+    };
+    
+    const handleGesture = (gesture: string | null, landmarks: any[]) => {
         if (landmarks && landmarks.length > 0) {
-          drawHand(landmarks);
+            drawHand(landmarks);
         }
         
-        setCurrentGesture(gesture);
-
         const now = Date.now();
         const timeSinceLastGesture = now - lastGestureTimeRef.current;
         
-        if (timeSinceLastGesture < 2000 || isProcessingGestureRef.current) {
-          return;
+        if (timeSinceLastGesture < 500 || isProcessingGestureRef.current) {
+            return;
         }
-
+    
         if (gesture) {
-          isProcessingGestureRef.current = true;
-          lastGestureTimeRef.current = now;
-
-          if (gesture === 'swipeLeft') {
-            onPreviousSlide();
-          } else if (gesture === 'swipeRight') {
-            onNextSlide();
-          }
-
-          setTimeout(() => {
-            isProcessingGestureRef.current = false;
-          }, 500);
+            isProcessingGestureRef.current = true;
+            lastGestureTimeRef.current = now;
+            setCurrentGesture(gesture);
+    
+            if (gesture === 'swipeLeft') {
+                onPreviousSlide();
+            } else if (gesture === 'swipeRight') {
+                onNextSlide();
+            } else if (gesture === 'fist') {
+                toolIndexRef.current = (toolIndexRef.current + 1) % tools.length;
+                onToolChange(tools[toolIndexRef.current]);
+            }
+    
+            setTimeout(() => {
+                isProcessingGestureRef.current = false;
+            }, 500);
+        } else {
+            setCurrentGesture(null);
         }
-      };
+    };
 
       hands.onResults((results: any) => {
         if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
@@ -190,7 +214,7 @@ const HandGestureControls: React.FC<HandGestureControlsProps> = ({
         hands.close();
       }
     };
-  }, [onNextSlide, onPreviousSlide]);
+  }, [onNextSlide, onPreviousSlide, onToolChange, tools]);
 
   return (
     <div className="fixed bottom-4 right-4 w-96 h-72">
@@ -207,7 +231,7 @@ const HandGestureControls: React.FC<HandGestureControlsProps> = ({
       />
       {currentGesture && (
         <div className="absolute top-0 left-0 w-full text-center bg-black bg-opacity-50 text-white p-1">
-          {currentGesture === 'swipeLeft' ? 'Poprzedni Slajd' : 'Następny Slajd'}
+          {currentGesture === 'swipeLeft' ? 'Poprzedni slajd' : currentGesture === 'swipeRight' ? 'Następny slajd' : currentGesture === 'fist' ? `Zmiana narzędzia: ${tools[toolIndexRef.current]}` : ''}
         </div>
       )}
     </div>
